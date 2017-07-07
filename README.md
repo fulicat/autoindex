@@ -45,6 +45,8 @@ server {
 ------
 
 
+# Screenshots:
+
 ### before:
 ![before](https://raw.githubusercontent.com/fulicat/autoindex/master/autoindex_before.png)
 
