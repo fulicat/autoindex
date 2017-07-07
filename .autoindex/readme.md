@@ -8,7 +8,7 @@ autoindex for Nginx
 ### 配置方法：
 
 1. 复制 .autoindex 目录至 D:\websites\fulicat\
-ps: D:\websites\fulicat\.autoindex
+ps: D:\websites\fulicat\\.autoindex
   
 
 2. 修改 nginx.conf 文件
