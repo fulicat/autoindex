@@ -1,0 +1,215 @@
+
+<!-- autoindex for nginx -->
+<style>
+.autoindex-list,
+.autoindex-copyright,
+.autoindex-unsupported{
+	font-family: Monaco, "Microsoft Yahei", "Helvetica Neue", Simsun, Helvetica, Tahoma, Arial,sans-serif;
+	font-size: 14px;
+}
+
+.autoindex-list>li{
+	line-height:34px;
+	border-bottom:1px #ddd solid;
+	padding-left:10px;
+	padding-right:10px;
+	position:relative;
+	color:#999;
+}
+.autoindex-list>li:hover{
+	background-color:#eee;
+	border-bottom-color:#2CC38E;
+}
+.autoindex-list>li a{
+	text-decoration:none;
+}
+.autoindex-list>li a:hover{
+	text-decoration:underline;
+}
+.autoindex-list>li span{
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:0;
+	min-width:300px;
+	display:inline-block;
+	color:#666;
+	padding-left:10px;
+	padding-right:10px;
+	background-color:rgba(255,255,255,0.45);
+}
+
+.autoindex-copyright{
+	text-align:right;
+	padding:10px;
+	color:#888;
+	font-size:12px;
+}
+.autoindex-copyright a{
+	color:#2c66b1;
+}
+.autoindex-toggle{
+	cursor:pointer;
+}
+.autoindex-toggle.active{
+	font-weight:bold;
+	color:#0093ff;
+}
+.autoindex-unsupported{
+	position:absolute;
+	right:0;
+	bottom:0;
+	z-index:6;
+	background-color:rgba(244,244,244,0.45);
+	padding:2px 5px;
+	font-size:12px;
+	margin:0;
+	color:#666;
+}
+
+@media (max-width: 640px){
+	.autoindex-list>li{
+		padding-top:6px;
+		padding-bottom:6px;
+		line-height:24px;
+	}
+	.autoindex-list>li a{
+		display:block;
+		white-space:normal;
+		word-break:break-all;
+		padding-top:5px;
+		padding-bottom:5px;
+	}
+	.autoindex-list>li span{
+		min-width:auto;
+		position:static;
+		font-size:12px;
+		line-height:16px;
+		color:#888;
+		background-color:transparent;
+		padding:2px 0 5px 0;
+	}
+}
+</style>
+<script>
+(function(window){
+	var autoindex = {
+		ver: '1.0',
+		release: '201707071001',
+		author: 'Jack.Chan',
+		email: '971546@qq.com',
+		db: {
+			prefix: 'autoindex_',
+			get: function(key){
+				if(key)key = this.prefix + key;
+				return localStorage.getItem(key);
+			},
+			set: function(key, value){
+				if(key)key = this.prefix + key;
+				localStorage.setItem(key, value);
+			},
+			remove: function(key){
+				if(key)key = this.prefix + key;
+				localStorage.removeItem(key);
+			},
+			clear: function(){
+				localStorage.clear();
+			}
+		},
+		target: '',
+		toggle: function(action){
+			switch(action){
+				case 'target':
+					if(this.target){
+						autoindex.db.remove('target');
+					}else{
+						autoindex.db.set('target', '_blank');
+					};
+					location.reload();
+					break;
+				case 'reset':
+					autoindex.db.clear();
+					location.reload();
+					break;
+				default:
+					break;
+			};
+		},
+		init: function(){
+			if(window.localStorage){
+				this.target = this.db.get('target');
+			};
+			if(typeof(document.querySelector)=='function'){
+				var autoindexDoctype = document.implementation.createDocumentType('html', '', '');
+				if(document.doctype){
+					document.replaceChild(autoindexDoctype, document.doctype);
+				}else{
+					document.insertBefore(autoindexDoctype, document.childNodes[0]);
+				};
+				var autoindexList = document.querySelector('body>pre');
+				if(autoindexList){
+					var head = document.querySelector('head#autoindex-head');
+					if(!head){
+						head = document.head;
+						var meta = document.createElement('meta');
+						meta.setAttribute('charset', 'utf-8');
+						head.appendChild(meta);
+						meta = document.createElement('meta');
+						meta.setAttribute('name', 'viewport');
+						meta.setAttribute('content', 'width=device-width,initial-scale=1');
+						head.appendChild(meta);
+						meta = document.createElement('meta');
+						meta.setAttribute('http-equiv', 'X-UA-Compatible');
+						meta.setAttribute('content', 'IE=edge,chrome=1');
+						head.appendChild(meta);
+						meta = document.createElement('meta');
+						meta.setAttribute('name', 'author');
+						meta.setAttribute('content', 'Jack.Chan');
+						head.appendChild(meta);
+					};
+					var listTag = 'ol';
+					var html = [], item = '', itemArr = [], itemLink = '', itemInfo = '';
+					var dataArr = autoindexList.innerHTML.split('\n');
+					for(var i in dataArr){
+						item = String(dataArr[i]).trim();
+						if(item){
+							if(item.indexOf('</a>') > -1){
+								itemArr = item.split('</a>');
+								itemLink = String(itemArr[0]).trim();
+								if(autoindex.target && i>0)itemLink = itemLink.replace('<a', '<a target="'+ autoindex.target +'"');
+								itemInfo = String(itemArr[1]).trim();
+								item = (itemLink ? itemLink +'</a>' : '') + (itemInfo ? '<span>'+ itemInfo +'</span>' : '');
+							};
+							html.push('<li'+ (i==0 ? ' class="parent"' : '') +'>'+ item +'</li>');
+						};
+					};
+					if(html.length){
+						html.unshift('<'+ listTag +' class="autoindex-list">');
+						html.push('</'+ listTag +'>');
+						html.push('<p class="autoindex-copyright"><span id="autoindex-toggle" class="autoindex-toggle'+ (autoindex.target ? ' active' :'') +'">autoindex</span> for Nginx.&nbsp;&copy;&nbsp;<a target="_blank" href="http://fulicat.com">fulicat.com</p>');
+						autoindexList.innerHTML = html.join('');
+						var autoindexToggle = document.querySelector('#autoindex-toggle');
+						if(autoindexToggle){
+							autoindexToggle.onclick = function(){
+								autoindex.toggle('target');
+							};
+						};
+					};
+					html = item = itemArr = itemLink = itemInfo = '';
+				};
+			}else{
+				var autoindexUnsupported = 'autoindex ->> your browser didn\'t support : " document.querySelector "';
+				if(window.console){
+					console.error(autoindexUnsupported);
+				}else{
+					document.write('<p class="autoindex-unsupported">'+ autoindexUnsupported +'</p>');
+				};
+			};
+		}
+	};
+
+	autoindex.init();
+	window.autoindex = autoindex;
+}(window));
+</script>
+<!-- autoindex for nginx -->
