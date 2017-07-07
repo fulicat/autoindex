@@ -46,7 +46,7 @@ server {
 
 
 ### before:
-![before](autoindex_before.png)
+![before](//raw.githubusercontent.com/fulicat/autoindex/master/autoindex_before.png)
 
 ### after:
-![after](autoindex_after.png)
+![after](//raw.githubusercontent.com/fulicat/autoindex/master/autoindex_after.png)
