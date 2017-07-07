@@ -1,0 +1,2 @@
+# autoindex
+autoindex for Nginx
