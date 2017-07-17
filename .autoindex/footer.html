@@ -26,6 +26,18 @@
 .autoindex-list>li a:hover{
 	text-decoration:underline;
 }
+.autoindex-list>li a.external{
+	font-size:0;
+	line-height:0;
+	width:10px;
+	height:10px;
+	display:inline-block;
+	vertical-align:middle;
+	margin-left:10px;
+	background-size:100%;
+	background-repeat:no-repeat;
+	background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjU4NDlBMTNGNkFBMjExRTc5QTBGRkY1NjU2Q0M4QkQ2IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjU4NDlBMTQwNkFBMjExRTc5QTBGRkY1NjU2Q0M4QkQ2Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NTg0OUExM0Q2QUEyMTFFNzlBMEZGRjU2NTZDQzhCRDYiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NTg0OUExM0U2QUEyMTFFNzlBMEZGRjU2NTZDQzhCRDYiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6I0xK9AAAA40lEQVR42mJkmPz/NAMDgwkDdvAFiHmh7OdALIEm/5kJSfNfLPg3ELMCMQsQRwDxVzQDeJmQOCxImBVqswyUDzLsIBAnojuRBYuzQYZyQ+l/UFv/A7EYEDdgU0xI8z+o5v1ArAXEF4E4BOYdZAMYidTsCsS7gDgYiB8jG8BBpOYfUHWHgFge3QXImgXwaP4HjSEm5ED8j6QZxv+LQzNI3WeQGmQDfkA1wcBHILZBchm697jQA/E/jpSITTPOaCQmShmIMYAozegpkQWH5u9QNhMhA34zkAFApp7AkROJwccAAgwAv1dfdV8fv7YAAAAASUVORK5CYII=);
+}
 .autoindex-list>li span{
 	position:absolute;
 	top:0;
@@ -94,8 +106,8 @@
 <script>
 (function(window){
 	var autoindex = {
-		ver: '1.0',
-		release: '201707071001',
+		ver: '1.1',
+		release: '201707171212',
 		author: 'Jack.Chan',
 		email: '971546@qq.com',
 		db: {
@@ -168,7 +180,7 @@
 						head.appendChild(meta);
 					};
 					var listTag = 'ol';
-					var html = [], item = '', itemArr = [], itemLink = '', itemInfo = '';
+					var html = [], item = '', itemArr = [], itemLink = '', itemInfo = '', itemExternal = '';
 					var dataArr = autoindexList.innerHTML.split('\n');
 					for(var i in dataArr){
 						item = String(dataArr[i]).trim();
@@ -176,11 +188,19 @@
 							if(item.indexOf('</a>') > -1){
 								itemArr = item.split('</a>');
 								itemLink = String(itemArr[0]).trim();
-								if(autoindex.target && i>0)itemLink = itemLink.replace('<a', '<a target="'+ autoindex.target +'"');
+								if(i>0){
+									if(autoindex.target){
+										itemLink = itemLink.replace('<a', '<a target="'+ autoindex.target +'"') + '</a>';
+									}else{
+										itemExternal = itemLink.replace('<a', '<a class="external" target="_blank" title="external"') + '</a>';
+									};
+								};
 								itemInfo = String(itemArr[1]).trim();
-								item = (itemLink ? itemLink +'</a>' : '') + (itemInfo ? '<span>'+ itemInfo +'</span>' : '');
+								item = itemLink + itemExternal + (itemInfo ? '<span>'+ itemInfo +'</span>' : '');
 							};
 							html.push('<li'+ (i==0 ? ' class="parent"' : '') +'>'+ item +'</li>');
+							itemArr = [];
+							item = itemLink = itemInfo = itemExternal = '';
 						};
 					};
 					if(html.length){
